@@ -1,0 +1,16 @@
+version: "3.0"
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+  yoursix:
+    build: .
+    networks:
+      - backend
+    volumes:
+      - .:/workspace
+    ports:
+      - 1337:1337 
+
