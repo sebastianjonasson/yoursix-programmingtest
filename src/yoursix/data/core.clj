@@ -26,7 +26,8 @@
                             (get collection)
                             (or [])
                             (conj next-entry))]
-    (swap! store assoc collection next-collection)))
+    (swap! store assoc collection next-collection)
+    next-entry))
 
 (use-fixtures :each (fn [f]
                       (swap! store (fn [_] {}))
