@@ -20,6 +20,7 @@
   (.stop http-server 0))
 
 (defn init [routes port root-url]
+  (println "WILL START ON")
   (let [socket-address (InetSocketAddress. port)
         http-server (HttpServer/create socket-address 0)
         start-server (partial start http-server)
