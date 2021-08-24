@@ -1,7 +1,7 @@
 (ns yoursix.router.core
- (:require [yoursix.router.util.request-handler :refer [request-handler]])
- (:import [java.net InetSocketAddress]
-          [com.sun.net.httpserver HttpServer])) 
+  (:require [yoursix.router.util.request-handler :refer [request-handler]])
+  (:import [java.net InetSocketAddress]
+           [com.sun.net.httpserver HttpServer]))
 
 (defn GET [url handler]
   {:method "GET"
@@ -20,12 +20,11 @@
   (.stop http-server 0))
 
 (defn init [routes port root-url]
-  (println "WILL START ON")
   (let [socket-address (InetSocketAddress. port)
         http-server (HttpServer/create socket-address 0)
         start-server (partial start http-server)
         stop-server (partial stop http-server)
         request-handler (request-handler routes)]
     (.createContext http-server root-url request-handler)
-  [start-server
-   stop-server]))
+    [start-server
+     stop-server]))

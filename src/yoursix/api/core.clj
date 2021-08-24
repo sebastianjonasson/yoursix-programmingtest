@@ -31,11 +31,11 @@
       (-> (robots/move! robot movement)
           (json-response)))))
 
-(defn start []
+(defn start [port]
   (let [routes [(router/GET "/robots" handle-index-robots)
                 (router/POST "/robots" handle-create-robot)
                 (router/GET "/robots/:robot-id" handle-robot-by-id)
                 (router/POST "/robots/:robot-id/move" handle-move-robot)]
-        [start] (router/init routes 1337 "/")]
+        [start] (router/init routes port "/")]
     (start)))
 
