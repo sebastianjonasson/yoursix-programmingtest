@@ -1,0 +1,144 @@
+openapi: "3.0.0"
+info:
+  version: 0.0.1b
+  title: YourSix Robots
+servers:
+  - url: http://localhost:1337
+paths:
+  /robots:
+    get:
+      summary: List all robots
+      tags:
+        - Robots
+      responses:
+        '200':
+          description: An array of registered robots
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Robots"
+    post:
+      summary: Create a Robot
+      tags:
+        - Robots
+      requestBody:
+        content:
+          'application/json':
+            schema:
+             properties:
+                id: 
+                  description: Id of the robot
+                  type: string
+                  format: uuid
+                initial-position:
+                  $ref: "#/components/schemas/Position"
+                room:
+                  $ref: "#/components/schemas/Room"
+             required:
+               - status
+      responses:
+        '200':
+          description: Created robot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Robot"
+  /robots/{robotId}:
+    get:
+      summary: Fetch single robot
+      tags:
+        - Robots
+      parameters:
+        - name: robotId
+          in: path
+          required: true
+          description: The id of the robot to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Robot instance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Robot"
+  /robots/{robotId}/move:
+    post:
+      summary: Move robot
+      tags:
+        - Robots
+      parameters:
+        - name: robotId
+          in: path
+          required: true
+          description: The id of the robot to move
+          schema:
+            type: string
+      requestBody:
+        content:
+          'application/json':
+            schema:
+             type: string
+             enum:
+             - L
+             - F
+             - R
+      responses:
+        '200':
+          description: Updated Robot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Robot"
+
+components:
+  schemas:
+    Room:
+      type: object
+      properties:
+        width:
+          description: Room width
+          type: integer
+        depth:
+          description: Room depth
+          type: integer
+    Position:
+      type: object
+      properties:
+        x:
+          type: integer
+        y:
+          type: integer
+        direction:
+          type: string
+          enum:
+          - "N"
+          - "E"
+          - "S"
+          - "W"
+    Robot:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        room:
+          $ref: "#/components/schemas/Room"
+        initial-position:
+          $ref: "#/components/schemas/Position"
+        current-position:
+          $ref: "#/components/schemas/Position"
+        moves:
+          type: array
+          items:
+            type: string
+            enum:
+            - "L"
+            - "F"
+            - "R"
+        tag:
+          type: string
+    Robots:
+      type: array
+      items:
+        $ref: "#/components/schemas/Robot"
