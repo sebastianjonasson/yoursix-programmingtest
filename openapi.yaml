@@ -80,9 +80,9 @@ paths:
             schema:
              type: string
              enum:
-             - L
-             - F
-             - R
+             - "L"
+             - "F"
+             - "R"
       responses:
         '200':
           description: Updated Robot

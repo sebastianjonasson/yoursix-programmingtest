@@ -18,3 +18,6 @@ At first glance of this assignment I thought I would approach this test as if I 
  - Logs and metrics
 
 As I consider these components essential to understand and include when building a web service for production, I wanted to highlight that these have been intentionally left out.
+
+## API Specification
+[Found here](https://github.com/sebastianjonasson/yoursix-programmingtest/blob/master/openapi.yaml)
