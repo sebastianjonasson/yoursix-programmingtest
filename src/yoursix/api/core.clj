@@ -12,15 +12,30 @@
   (-> (robots/fetch-all)
       (json-response)))
 
-(defn- handle-create-robot [params]
-  (-> params
+(defn- handle-robot-by-id [request]
+  (-> (robots/fetch-by-id (-> request :params :robot-id))
+      (json-response)))
+
+(defn- handle-create-robot [request]
+  (-> request
       :body
       robots/insert!
       json-response))
 
+(defn- handle-move-robot [request]
+  (let [robot-id (get-in request [:params :robot-id])
+        movement (:body request)
+        robot (robots/fetch-by-id robot-id)]
+
+    (when (and robot (contains? #{"L" "F" "R"} movement))
+      (-> (robots/move! robot movement)
+          (json-response)))))
+
 (defn start []
-  (let [index-robots (router/GET "/robots" handle-index-robots)
-        post-robot (router/POST "/robots" handle-create-robot)
-        [start _] (router/init [index-robots post-robot] 1337 "/")]
+  (let [routes [(router/GET "/robots" handle-index-robots)
+                (router/POST "/robots" handle-create-robot)
+                (router/GET "/robots/:robot-id" handle-robot-by-id)
+                (router/POST "/robots/:robot-id/move" handle-move-robot)]
+        [start] (router/init routes 1337 "/")]
     (start)))
 

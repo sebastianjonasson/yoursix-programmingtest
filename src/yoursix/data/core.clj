@@ -1,5 +1,6 @@
 (ns yoursix.data.core
-  (:require [clojure.test :refer [deftest is testing use-fixtures]]))
+  (:require [clojure.test :refer [deftest is testing use-fixtures]]
+            [clojure.core.reducers :as r]))
 
 (def store (atom {}))
 
@@ -28,6 +29,17 @@
                             (conj next-entry))]
     (swap! store assoc collection next-collection)
     next-entry))
+
+(defn update! [collection id updated-entry]
+  (let [current-collection (get @store collection)
+        next-collection (r/map
+                         (fn [entry]
+                           (if (= id (:id entry))
+                             updated-entry
+                             entry))
+                         current-collection)]
+    (swap! store assoc collection (into [] next-collection))
+    updated-entry))
 
 (use-fixtures :each (fn [f]
                       (swap! store (fn [_] {}))
@@ -88,3 +100,26 @@
 
   (testing "should return nil if entry does not exist"
     (is (nil? (fetch-by-id :employees "ab1574ac-fc86-4699-b1a1-22419d3ab8fc")))))
+
+(deftest update!-test
+  (let [entries [{:id "3a1f30ca-2869-4742-962d-1b4b7c35cd76"
+                  :name "Michael Scott"
+                  :role "Regional manager"}
+                 {:id "467932bc-3a30-4e06-b4bf-71fadde1a5d3"
+                  :name "Dwight Schrute"
+                  :role "Assistant [to the] Regional manager"}]
+        next-entry {:id "467932bc-3a30-4e06-b4bf-71fadde1a5d3"
+                    :name "Dwight Schrute"
+                    :role "Sales"}]
+
+    (insert! :employees (first entries))
+    (insert! :employees (last entries))
+
+    (let [update-result (update! :employees "467932bc-3a30-4e06-b4bf-71fadde1a5d3"
+                                 next-entry)
+          fetch-result (fetch-by-id :employees "467932bc-3a30-4e06-b4bf-71fadde1a5d3")]
+      (testing "Should return updated entry"
+        (is (= next-entry update-result)))
+      (testing "Should update data store"
+        (is (= next-entry fetch-result))
+        (is (= 2 (-> @store :employees count)))))))
